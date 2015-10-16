@@ -13,7 +13,7 @@ def dtmove(cap = cv2.VideoCapture(0)):
     ret,frame = cap.read()
     grabold = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     print "[INFO] starting background model..."
-    avg = grabold.copy()
+    avg = cv2.GaussianBlur(grabold, (21, 21), 0)
     while True:
         if cv2.waitKey(10)&0xFF == ord(' '):
             while True:
@@ -23,6 +23,7 @@ def dtmove(cap = cv2.VideoCapture(0)):
         timestamp = datetime.datetime.now()
         grab = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
         gray = cv2.absdiff(grab, cv2.convertScaleAbs(avg))
+        gray = cv2.GaussianBlur(gray, (21, 21), 0)
         ret, thresh = cv2.threshold(gray, 55, 255, cv2.THRESH_BINARY)
         thresh = cv2.dilate(thresh, None, iterations=2)
         (cnts,_) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
@@ -44,7 +45,7 @@ def dtmove(cap = cv2.VideoCapture(0)):
             (difzx,_,_,_) = cv2.mean(diflx)
             if difzx<4 :  #背景重新获取
                 # print "[INFO] starting background model..."
-                avg = grab.copy()
+                avg = cv2.GaussianBlur(grab, (21, 21), 0)
         #背景重新获取
         if (occflag == 0):    
             (difavg,_,_,_) = cv2.mean(gray)
@@ -54,7 +55,7 @@ def dtmove(cap = cv2.VideoCapture(0)):
             if(difavg >7):
             # if(difavg >9)|(difzx < 4):
                 # print "[INFO] starting background model..."
-                avg = grab.copy()
+                avg = cv2.GaussianBlur(grab, (21, 21), 0)
 
         occflag = 0
         grabold = grab.copy()
